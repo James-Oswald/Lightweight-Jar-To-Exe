@@ -23,7 +23,13 @@
             "group": {
                 "kind": "build",
                 "isDefault": true
-            },
+            }
+        },
+        {
+            "type": "shell",
+            "label": "build converter",
+            "command": "node tools/build.js",
+            "problemMatcher": []
         }
     ],
     "version": "2.0.0"

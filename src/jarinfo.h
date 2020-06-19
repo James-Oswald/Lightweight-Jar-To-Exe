@@ -1,1 +1,1 @@
-
+const char* mainClass = "";

@@ -31,6 +31,14 @@
             "name": "Debug builder",
             "request": "launch",
             "program": "${workspaceFolder}/tools/build.js"
+        },
+        {
+            "type":"node",
+            "console": "integratedTerminal",
+            "name": "Debug converter",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/converter.js",
+            "args": ["startsound.jar"]
         }
     ]
 }
