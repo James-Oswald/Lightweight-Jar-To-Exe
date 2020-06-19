@@ -3,7 +3,6 @@
 let fs = require("fs");
 let path = require("path");
 let cp = require("child_process");
-const { fileURLToPath } = require("url");
 
 let programString = ``;
 
@@ -49,7 +48,7 @@ function main(){
         if(mainifestProp["Main-Class"] == undefined){
             throw new Error("Error: The .jar file \"" + jarName + "\" did not have a Main-Class specified, not executable");
         }
-        let jarinfo = "const char* mainClass = \"" + mainifestProp["Main-Class"] + "\";";
+        let jarinfo = "const char* mainClassName = \"" + mainifestProp["Main-Class"] + "\";";
         fs.writeFileSync("jarinfo.h", jarinfo);
 
         //store the raw jar data within a .h file to be packaged into the exe

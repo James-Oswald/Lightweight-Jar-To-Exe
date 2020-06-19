@@ -3,7 +3,6 @@
 let fs = require("fs");
 let path = require("path");
 let cp = require("child_process");
-const { fileURLToPath } = require("url");
 
 let programString = ``;
 
@@ -49,7 +48,7 @@ function main(){
         if(mainifestProp["Main-Class"] == undefined){
             throw new Error("Error: The .jar file \"" + jarName + "\" did not have a Main-Class specified, not executable");
         }
-        let jarinfo = "const char* mainClass = \"" + mainifestProp["Main-Class"] + "\";";
+        let jarinfo = "const char* mainClassName = \"" + mainifestProp["Main-Class"] + "\";";
         fs.writeFileSync("jarinfo.h", jarinfo);
 
         //store the raw jar data within a .h file to be packaged into the exe
@@ -109,11 +108,11 @@ int main(){
     char optString[MAX_PATH];
     sprintf(classPath, "%sprog.jar", pathBuffer);
     sprintf(optString, "-Djava.class.path=%s", classPath);
-    FILE* file = fopen(classPath, "w");
+    FILE* file = fopen(classPath, "w+b");
     printf("%s\\n", optString);
     if(file == NULL){
-        printf("Error: Failed to open file!");
-        exit(1);
+        printf("Error: Failed to open file!\\n");
+        goto fileFail;
     }
     fwrite(prog_jar, sizeof(unsigned char), prog_jar_len, file);
     fclose(file);
@@ -127,12 +126,33 @@ int main(){
 	vm_args.options = options;
     vm_args.ignoreUnrecognized = true; 
     if(JNI_CreateJavaVM(&jvm, (void**)&env, &vm_args) != JNI_OK){
-        printf("Error: Failed to create VM");
-        exit(1);
+        printf("Error: Failed to create VM\\n");
+        goto vmFail; //That's right I'm edgy, check out these sick gotos
     }
     jint ver = (*env)->GetVersion(env);
-    printf("JNI version %d.%d init sucessful", ver>>16, ver&0x0f);
-    //jclass c = (*env)->FindClass(env,)
+    printf("JNI version %d.%d init sucessful\\n", ver>>16, ver&0x0f);
+    jclass mainClass = (*env)->FindClass(env, mainClassName);
+    if(mainClass == NULL){
+        (*env)->ExceptionDescribe(env);
+        printf("\\nError: Failed to create main class %s\\n", mainClassName);
+        goto vmErr;
+    }
+    jmethodID mainMethod = (*env)->GetStaticMethodID(env, mainClass, "main", "([Ljava/lang/String;)V");
+    if(mainMethod == NULL){
+        (*env)->ExceptionDescribe(env);
+        printf("\\nError: Failed to find main method %s\\n", mainClassName);
+        goto vmErr;
+    }
+    jobjectArray args = (*env)->NewObjectArray(env, 1, (*env)->FindClass(env, "java/lang/String"), NULL);
+    jstring arg0 = (*env)->NewStringUTF(env, mainClassName);
+    (*env)->SetObjectArrayElement(env, args, 0, arg0);
+    (*env)->CallStaticVoidMethod(env, mainClass, mainMethod, args);
+    vmErr:
+    (*jvm)->DestroyJavaVM(jvm);
+    vmFail:
+    remove("prog.jar");
+    free(options);
+    fileFail:
     return 0;
 }`;
 
