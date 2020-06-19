@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.17763.0",
+            "compilerPath": "C:\\msys64\\mingw64\\bin\\gcc.exe",
+            "intelliSenseMode": "gcc-x64",
+            "includePath": ["C:\\Program Files\\Java\\jdk-10.0.2\\include", "C:\\Program Files\\Java\\jdk-10.0.2\\include\\win32","./"],
+            "cStandard": "c11"
+        }
+    ],
+    "version": 4
+}
