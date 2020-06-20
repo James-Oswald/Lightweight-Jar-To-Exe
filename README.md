@@ -14,6 +14,12 @@ node converter.js progam.jar
 ```
 If all goes well, `program.exe` will appear in the same directory. It is highly advised you move the newly created .exe file out of the directory of the .jar as soon as it’s created, since if the Main-Class’s name is the same as the jar file’s, it will create undefined behavior at runtime due to naming conflicts. More on why in the section “How the Generated .exe works”.
 
+### Examples
+For a more concrete example see the examples folder. /examples/ex1 uses my project [Windows10-Add-Startup-Sound](https://github.com/James-Oswald/Windows10-Add-Startup-Sound) and converts it into an exe, the folder contains before and after snapshots of the conversion. You test out `converter.js` in /examples/ex1/before by running:
+```
+node converter.js progam.jar
+```
+If all goes well you should get an identical progam as the one located in the /after/ directory. 
 ## How it works
 
 ### How the builder works
