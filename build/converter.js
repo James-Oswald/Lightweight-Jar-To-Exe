@@ -175,6 +175,9 @@ void runJar(char* jarName){
     fileFail:;
 }
 
+/*
+create the process that runs the jar
+*/
 void createJarProcess(char* jarName){
     STARTUPINFO si;
     PROCESS_INFORMATION pi;
@@ -197,6 +200,11 @@ void createJarProcess(char* jarName){
     //system("pause");
 }
 
+
+/*
+    Scan input to determine what mode the exe is being run in, there are 2 mode
+    "normal" and "jar", "normal" mode preps the jar to be converted to a 
+*/
 int main(int argc, char* argv[]){
     char* mode = "normal";
     for(int i = 0; i < argc; i++)

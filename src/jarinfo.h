@@ -1,1 +1,1 @@
-const char* mainClassName = "sound";
+const char* mainClassName = "";
