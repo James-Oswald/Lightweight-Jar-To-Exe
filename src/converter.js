@@ -1,11 +1,18 @@
-"use strict"
+/*
+    Converts the jar into a .exe
+
+*/
+
+"use strict";
 
 let fs = require("fs");
 let path = require("path");
 let cp = require("child_process");
 
+//build.js located in /tools/ will convert this to the C code that runs
 let programString = ``;
 
+//check if command exists on the local system
 function commandExists(cmd){
     try{
         cp.execSync("where " + cmd, {stdio:["ignore"]});
@@ -17,16 +24,22 @@ function commandExists(cmd){
 
 function main(){
     process.chdir(__dirname);
+    
+    //Ensure the system has all the commands needed to run this script
     let reqCmds = ["xxd", "gcc", "jar", "javac"];
     for(let i = 0; i < reqCmds; i++)
         if(!commandExists(reqCmds)){
             console.error("Error: This program requires the command \"" + reqCmds[i] + "\", which can not be found on your path!");
             return;
         }
+    
+    //make sure a jar was provided
     if(process.argv.length <= 2){
         console.error("Error: provide a .jar file as an argument");
         return;
     }
+
+    //setup and compile the exe
     let jarName = process.argv[2];
     try{
         fs.mkdirSync("./tmp", {recursive: true});

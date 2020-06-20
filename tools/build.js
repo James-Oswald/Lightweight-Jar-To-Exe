@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 let fs = require("fs");
 let cp = require("child_process");

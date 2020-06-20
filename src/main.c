@@ -35,6 +35,7 @@ void deleteJar(char* jarName){
     }
 }
 
+//JNI code that actually runs the .jar file
 void runJar(char* jarName){
     char classPath[MAX_PATH];
     char optString[MAX_PATH];
@@ -42,14 +43,18 @@ void runJar(char* jarName){
     getPath(pathBuffer);
     sprintf(classPath, "%s%s", pathBuffer, jarName);
     sprintf(optString, "-Djava.class.path=%s", classPath);
+
+    //copy the .jar binary data from inside the exe to a real .jar outside the exe
     FILE* file = fopen(classPath, "w+b");
     printf("%s\n", optString);
     if(file == NULL){
         printf("Error: Failed to open file!\n");
-        goto fileFail;
+        goto fileFail; //That's right I'm edgy, check out these gotos
     }
     fwrite(prog_jar, sizeof(unsigned char), prog_jar_len, file);
     fclose(file);
+
+    //Use the JNI to run the now external Jar File
     JavaVM* jvm = NULL;
 	JNIEnv* env = NULL;
     JavaVMOption* options = malloc(sizeof(JavaVMOption) * numOptions);
@@ -61,7 +66,7 @@ void runJar(char* jarName){
     vm_args.ignoreUnrecognized = true; 
     if(JNI_CreateJavaVM(&jvm, (void**)&env, &vm_args) != JNI_OK){
         printf("Error: Failed to create VM\n");
-        goto vmFail; //That's right I'm edgy, check out these gotos
+        goto vmFail; 
     }
     free(options);
     jint ver = (*env)->GetVersion(env);
@@ -81,11 +86,9 @@ void runJar(char* jarName){
     jobjectArray args = (*env)->NewObjectArray(env, 1, (*env)->FindClass(env, "java/lang/String"), NULL);
     jstring arg0 = (*env)->NewStringUTF(env, mainClassName);
     (*env)->SetObjectArrayElement(env, args, 0, arg0);
-    //system("pause");
     (*env)->CallStaticVoidMethod(env, mainClass, mainMethod, args);
     vmErr:;
-    if((*env)->GetJavaVM(env, &jvm) != 0)
-        (*jvm)->DestroyJavaVM(jvm);
+    (*jvm)->DestroyJavaVM(jvm);
     vmFail:;
     deleteJar(jarName);
     fileFail:;
@@ -116,10 +119,12 @@ void createJarProcess(char* jarName){
     //system("pause");
 }
 
-
 /*
     Scan input to determine what mode the exe is being run in, there are 2 mode
-    "normal" and "jar", "normal" mode preps the jar to be converted to a 
+    "normal" and "jar", "normal" mode creates a copy of this application as a subprocess
+    in "jar" mode. It is important the jni Jar runs in a subprocess because of what occurs when
+    a Java program calls System.exit(). On a system.exit() call from inside the jar the whole process
+    is killed which wouldn't allow me to clean up the jar file that's generated. 
 */
 int main(int argc, char* argv[]){
     char* mode = "normal";
