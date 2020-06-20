@@ -1,6 +1,5 @@
 /*
-    Converts the jar into a .exe
-
+    Converts the jar into an .exe
 */
 
 "use strict";
