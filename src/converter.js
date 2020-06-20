@@ -48,7 +48,8 @@ function main(){
         if(mainifestProp["Main-Class"] == undefined){
             throw new Error("Error: The .jar file \"" + jarName + "\" did not have a Main-Class specified, not executable");
         }
-        let jarinfo = "const char* mainClassName = \"" + mainifestProp["Main-Class"] + "\";";
+        let mainClassName = mainifestProp["Main-Class"].replace(/\./g, "/"); //Manifest delimits class name with '.', jni FindClass requires '/'
+        let jarinfo = "const char* mainClassName = \"" + mainClassName + "\";";
         fs.writeFileSync("jarinfo.h", jarinfo);
 
         //store the raw jar data within a .h file to be packaged into the exe
@@ -66,7 +67,8 @@ function main(){
             "-I\"" + javaHome + "\\include\"",
             "-I\"" + javaHome + "\\include\\win32\"",
             "-L\"" + javaHome + "\\lib\"",
-            "-ljvm"
+            "-ljvm",
+            "-mwindows"
         ].join(" ");
         cp.execSync(gcc);
         fs.copyFileSync(execName, "../" + execName);
