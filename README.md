@@ -10,7 +10,7 @@ In order for the converter to work, the commands “xxd”, “gcc”, “jar”
 ## Running
 Place `converter.js` (located in /build/) in the same directory as the desired .jar to convert (I’ll be referring to it as `program.jar` for this example). Run `converter.jar` with node passing in the name of the jar as a command line argument. Ex:
 ```
-node converter.js progam.jar
+node converter.js program.jar
 ```
 If all goes well, `program.exe` will appear in the same directory. It is highly advised you move the newly created .exe file out of the directory of the .jar as soon as it’s created, since if the Main-Class’s name is the same as the jar file’s, it will create undefined behavior at runtime due to naming conflicts. More on why in the section “How the Generated .exe works”.
 
