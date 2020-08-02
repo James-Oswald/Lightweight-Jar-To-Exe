@@ -1,0 +1,3 @@
+examples/* linguist-detectable=false
+build/* linguist-detectable=false
+tools/* linguist-detectable=false
